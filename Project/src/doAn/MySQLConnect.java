@@ -7,7 +7,7 @@ import java.util.*;
 public class MySQLConnect {
 	
 	static void ticketOrder (Scanner sc, Connection conn) {
-		char feat = 0;
+		String feat = "0";
 		boolean valid = false;
 		System.out.println("Here is the list of Films with available tickets:");
 		System.out.println("...");
@@ -17,8 +17,8 @@ public class MySQLConnect {
 				System.out.println("What do you want to do next?");
 				System.out.println("1. Continue using Ticketer");
 				System.out.println("2. Exit");
-				feat = sc.next().charAt(0);
-				if (feat != '1' && feat != '2') {
+				feat = sc.nextLine();
+				if (!feat.contentEquals("1") && !feat.contentEquals("2")) {
 					throw new Exception("Invalid input!");
 				}
 			}
@@ -28,16 +28,21 @@ public class MySQLConnect {
 			}
 		} while (!valid);
 		
-		if (feat == '1') {
-			client(sc, conn);
-		}
-		else {
-			exitTicketer();
+		switch (feat) {
+			case "1":
+				client(sc, conn);
+				break;
+			case "2":
+				exitTicketer();
+				break;
+			default:
+				System.out.println("Invalid input! Please try again");
+				break;
 		}
 	}
 	
 	static void lookupSchedule (Scanner sc, Connection conn) {
-		char feat = 0;
+		String feat = "0";
 		boolean valid = false;
 		System.out.println("Here is the schedule of upcoming Films:");
 		System.out.println("...");
@@ -47,8 +52,8 @@ public class MySQLConnect {
 				System.out.println("What do you want to do next?");
 				System.out.println("1. Continue using Ticketer");
 				System.out.println("2. Exit");
-				feat = sc.next().charAt(0);
-				if (feat != '1' && feat != '2') {
+				feat = sc.nextLine();
+				if (!feat.contentEquals("1") && !feat.contentEquals("2")) {
 					throw new Exception("Invalid input!");
 				}
 			}
@@ -58,16 +63,21 @@ public class MySQLConnect {
 			}
 		} while (!valid);
 		
-		if (feat == '1') {
-			client(sc, conn);
-		}
-		else {
-			exitTicketer();
+		switch (feat) {
+			case "1":
+				client(sc, conn);
+				break;
+			case "2":
+				exitTicketer();
+				break;
+			default:
+				System.out.println("Invalid input! Please try again");
+				break;
 		}
 	}
 	
 	static void client(Scanner sc, Connection conn) {
-		char feat = 0;
+		String feat = "0";
 		boolean valid = false;
 		System.out.println("Hello dear client! How may Ticketer help you today?");
 		do {
@@ -77,8 +87,8 @@ public class MySQLConnect {
 				System.out.println("1. Order a ticket");
 				System.out.println("2. Look up Film schedule");
 				System.out.println("3. Exit");
-				feat = sc.next().charAt(0);
-				if (feat != '1' && feat != '2' && feat  != '3') {
+				feat = sc.nextLine();
+				if (!feat.contentEquals("1") && !feat.contentEquals("2") && !feat.contentEquals("3")) {
 					throw new Exception("Invalid input!");
 				}
 			}
@@ -88,14 +98,20 @@ public class MySQLConnect {
 			}
 		} while (!valid);
 		
-		if (feat == '1') {
-			ticketOrder(sc, conn);
-		}
-		else if (feat == '2') {
-			lookupSchedule(sc, conn);
-		}
-		else {
-			exitTicketer();
+		
+		switch (feat) {
+			case "1":
+				ticketOrder(sc, conn);
+				break;
+			case "2":
+				lookupSchedule(sc, conn);
+				break;
+			case "3":
+				exitTicketer();
+				break;
+			default:
+				System.out.println("Invalid input! Please try again");
+				break;
 		}
 		
 	}
@@ -107,7 +123,7 @@ public class MySQLConnect {
 			valid = true;
 			try {
 				System.out.println("To proceed in administrator mode, please enter the correct password");
-				System.out.println("or press 3 to exit");
+				System.out.println("or enter 'exit' to exit");
 				password = sc.nextLine();
 				if (!password.contentEquals("123456") && !password.contentEquals("3")) {
 					throw new Exception("Invalid input!");
@@ -122,13 +138,13 @@ public class MySQLConnect {
 		if (password.contentEquals("123456")) {
 			admin(sc, conn);
 		}
-		else if (password == "3") {
+		else if (password.contentEquals("exit")) {
 			exitTicketer();
 		}	
 	}
 	
 	static void admin(Scanner sc, Connection conn) {
-		char feat = 0;
+		String feat = "0";
 		boolean valid = false;
 		do {
 			valid = true;
@@ -138,10 +154,11 @@ public class MySQLConnect {
 				System.out.println("2. Add new theater info");
 				System.out.println("3. Add new scheduling info");
 				System.out.println("4. Add new customer info");
-				System.out.println("5. Exit");
-				feat = sc.next().charAt(0);
+				System.out.println("5. Calculate revenue");
+				System.out.println("6. Exit");
+				feat = sc.nextLine();
 				sc.nextLine();
-				if (feat != '1' && feat != '2' && feat  != '3' && feat  != '4' && feat  != '5') {
+				if (!feat.contentEquals("1") && !feat.contentEquals("2") && !feat.contentEquals("3") && !feat.contentEquals("4") && !feat.contentEquals("5") && !feat.contentEquals("6")) {
 					throw new Exception("Invalid input!");
 				}
 			}
@@ -151,20 +168,27 @@ public class MySQLConnect {
 			}
 		} while (!valid);
 		
-		if (feat == '1') {
-			addFilm(sc, conn);
-		}
-		else if (feat == '2') {
-			addTheater(sc, conn);
-		}
-		else if (feat == '3') {
-			addSchedule(sc, conn);
-		}
-		else if (feat == '4') {
-			addCustomer(sc, conn);
-		}
-		else {
-			exitTicketer();
+		switch (feat) {
+			case "1":
+				addFilm(sc, conn);
+				break;
+			case "2":
+				addTheater(sc, conn);
+				break;
+			case "3":
+				addSchedule(sc, conn);
+				break;
+			case "4":
+				addCustomer(sc, conn);
+				break;
+			case "5":
+				getRevenue(sc, conn);
+				break;
+			case "6":
+				exitTicketer();
+				break;
+			default:
+				System.out.println("Invalid input! Please try again");
 		}
 	}
 	
@@ -173,7 +197,7 @@ public class MySQLConnect {
 		CallableStatement cStmt = null;
 		String id, name, genre, sReleaseDate, origin, lang, limit;
 		int duration;
-		char feat = 0;
+		String feat = "0";
 		boolean valid = false;		
 		//Get input
 		System.out.println("Please insert new film infomation:");
@@ -231,8 +255,8 @@ public class MySQLConnect {
 				System.out.println("What do you want to do next?");
 				System.out.println("1. Continue");
 				System.out.println("2. Exit");
-				feat = sc.next().charAt(0);
-				if (feat != '1' && feat != '2') {
+				feat = sc.nextLine();
+				if (!feat.contentEquals("1") && !feat.contentEquals("2")) {
 					throw new Exception("Invalid input!");
 				}
 			}
@@ -242,11 +266,16 @@ public class MySQLConnect {
 			}
 		} while (!valid);
 		
-		if (feat == '1') {
-			admin(sc, conn);
-		}
-		else {
-			exitTicketer();
+		switch (feat) {
+			case "1":
+				admin(sc, conn);
+				break;
+			case "2":
+				exitTicketer();
+				break;
+			default:
+				System.out.println("Invalid input! Please try again");
+				break;
 		}
 	}
 	
@@ -254,10 +283,10 @@ public class MySQLConnect {
 		CallableStatement cStmt = null;
 		String id, name, location, opening;
 		int hotline;
-		char feat = 0;
+		String feat = "0";
 		boolean valid = false;		
 		//Get input
-		System.out.println("Please insert new film infomation:");
+		System.out.println("Please insert new theater infomation:");
 		System.out.println("Theater's ID: ");
 		id = sc.nextLine();
 		System.out.println("Theater's name: ");
@@ -302,8 +331,8 @@ public class MySQLConnect {
 				System.out.println("What do you want to do next?");
 				System.out.println("1. Continue");
 				System.out.println("2. Exit");
-				feat = sc.next().charAt(0);
-				if (feat != '1' && feat != '2') {
+				feat = sc.nextLine();
+				if (!feat.contentEquals("1") && !feat.contentEquals("2")) {
 					throw new Exception("Invalid input!");
 				}
 			}
@@ -313,11 +342,16 @@ public class MySQLConnect {
 			}
 		} while (!valid);
 		
-		if (feat == '1') {
-			admin(sc, conn);
-		}
-		else {
-			exitTicketer();
+		switch (feat) {
+			case "1":
+				admin(sc, conn);
+				break;
+			case "2":
+				exitTicketer();
+				break;
+			default:
+				System.out.println("Invalid input! Please try again");
+				break;
 		}
 	}
 	
@@ -328,7 +362,7 @@ public class MySQLConnect {
 		CallableStatement cStmt = null;
 		String sid, fid, tid, startTime;
 		int totalSlot, availableSlot, screen, colNum;
-		char feat = 0;
+		String feat = "0";
 		boolean valid = false;
 		//get id name of films and theaters
 		try {
@@ -437,8 +471,8 @@ public class MySQLConnect {
 				System.out.println("What do you want to do next?");
 				System.out.println("1. Continue");
 				System.out.println("2. Exit");
-				feat = sc.next().charAt(0);
-				if (feat != '1' && feat != '2') {
+				feat = sc.nextLine();
+				if (!feat.contentEquals("1") && !feat.contentEquals("2")) {
 					throw new Exception("Invalid input!");
 				}
 			}
@@ -448,11 +482,16 @@ public class MySQLConnect {
 			}
 		} while (!valid);
 		
-		if (feat == '1') {
-			admin(sc, conn);
-		}
-		else {
-			exitTicketer();
+		switch (feat) {
+			case "1":
+				admin(sc, conn);
+				break;
+			case "2":
+				exitTicketer();
+				break;
+			default:
+				System.out.println("Invalid input! Please try again");
+				break;
 		}
 	}
 	
@@ -460,7 +499,7 @@ public class MySQLConnect {
 		CallableStatement cStmt = null;
 		String phone, name, membership;
 		int age;
-		char feat = 0;
+		String feat = "0";
 		boolean valid = false;
 
 		//Get input
@@ -506,8 +545,8 @@ public class MySQLConnect {
 				System.out.println("What do you want to do next?");
 				System.out.println("1. Continue");
 				System.out.println("2. Exit");
-				feat = sc.next().charAt(0);
-				if (feat != '1' && feat != '2') {
+				feat = sc.nextLine();
+				if (!feat.contentEquals("1") && !feat.contentEquals("2")) {
 					throw new Exception("Invalid input!");
 				}
 			}
@@ -517,14 +556,152 @@ public class MySQLConnect {
 			}
 		} while (!valid);
 		
-		if (feat == '1') {
-			admin(sc, conn);
-		}
-		else {
-			exitTicketer();
+		switch (feat) {
+			case "1":
+				admin(sc, conn);
+				break;
+			case "2":
+				exitTicketer();
+				break;
+			default:
+				System.out.println("Invalid input! Please try again");
+				break;
 		}
 	}
 	
+	static void getRevenue (Scanner sc, Connection conn) {
+		Date date = null;
+		CallableStatement cStmt = null;
+		ResultSetMetaData rsmd = null;
+		String revenue;
+		int month, year;
+		String sDate = null;
+		String feat = "0";
+		boolean valid = false;		
+		//ask if user wanna get day or month revenue
+		do {
+			valid = true;
+			try {
+				System.out.println("What kind of revenue do you want to calculate?");
+				System.out.println("1. A day's revenue");
+				System.out.println("2. A month's revenue");
+				System.out.println("3. Exit");
+				feat = sc.nextLine();
+				if (!feat.contentEquals("1") && !feat.contentEquals("2") && !feat.contentEquals("3")) {
+					throw new Exception("Invalid input!");
+				}
+			}
+			catch (Exception e) {
+				valid = false;
+				System.out.println("Invalid input! Please try again");
+			}
+		} while (!valid);
+				
+		if (feat.contentEquals("1")) { //get day's revenue
+			try {
+				//get input
+				System.out.println("Enter date (YYYY-MM-DD): ");
+				sDate = sc.nextLine();
+				date = Date.valueOf(sDate);
+				//call procedure and set parameters
+				cStmt = conn.prepareCall("{call drevenue(?)}");
+				cStmt.setDate(1, date);
+				//execute and notify the success of the procedure
+				ResultSet rs = cStmt.executeQuery();
+				if(rs != null) {
+					revenue = rs.getString(0);
+					System.out.println(date + " revenue: " + revenue);
+				}	
+			} catch (SQLException e1) {
+				System.out.println("SQL Exception: " + e1.getMessage());
+			} finally {
+				if (cStmt != null) {
+					try {
+						cStmt.close();
+					} catch (SQLException e1) {
+						System.out.println("SQL Exception: " + e1.getMessage());
+					}
+					
+					cStmt = null;
+				}
+			}
+		}
+		else if (feat.contentEquals("2")) { //get month's revenue
+			try {
+				//get input
+				System.out.println("Enter month: ");
+				month = sc.nextInt();
+				sc.nextLine();
+				System.out.println("Enter year: ");
+				year = sc.nextInt();
+				sc.nextLine();
+				//call procedure and set parameters
+				cStmt = conn.prepareCall("{call mrevenue(?, ?)}");
+				cStmt.setInt(1, month);
+				cStmt.setInt(2, year);
+				//execute and notify the success of the procedure
+				ResultSet rs = cStmt.executeQuery();
+				if(rs != null) {
+					rsmd = rs.getMetaData();
+					int colNum = rsmd.getColumnCount();
+					while (rs.next()) {			
+						for (int i = 1; i <= colNum; i++) {
+							if (i > i)
+								System.out.println(", ");
+							String colValue = rs.getString(i);
+							System.out.println(month + "-" + year + " revenue: " + colValue + " VND");
+						}
+						System.out.println("");
+					}
+
+				}	
+			} catch (SQLException e1) {
+				System.out.println("SQL Exception: " + e1.getMessage());
+			} finally {
+				if (cStmt != null) {
+					try {
+						cStmt.close();
+					} catch (SQLException e1) {
+						System.out.println("SQL Exception: " + e1.getMessage());
+					}
+					
+					cStmt = null;
+				}
+			}
+		}
+		else if (feat.contentEquals("3")) {
+			exitTicketer();
+		}
+		//Ask user what do they want to do next
+		do {
+			valid = true;
+			try {
+				System.out.println("What do you want to do next?");
+				System.out.println("1. Continue");
+				System.out.println("2. Exit");
+				feat = sc.nextLine();
+				if (!feat.contentEquals("1") && !feat.contentEquals("2")) {
+					throw new Exception("Invalid input!");
+				}
+			}
+			catch (Exception e) {
+				valid = false;
+				System.out.println("Invalid input! Please try again");
+			}
+		} while (!valid);
+		
+		switch (feat) {
+			case "1":
+				admin(sc, conn);
+				break;
+			case "2":
+				exitTicketer();
+				break;
+			default:
+				System.out.println("Invalid input! Please try again");
+				break;
+		}
+	}
 	static void exitTicketer(){
 		System.out.println("======* Thank you for using Ticketer! We hope to see you again *======");
 		try
@@ -542,7 +719,7 @@ public class MySQLConnect {
 	public static void main(String[] args) {
 		Scanner sc = new Scanner(System.in);
 		boolean valid = false;
-		char mode = '0';
+		String mode = "0";
 		Connection conn = null;
 		String url = "jdbc:mysql://localhost:3306/Cinema";
 		//url = "jdbc:mysql://localhost:port_number/database_name
@@ -562,9 +739,9 @@ public class MySQLConnect {
 			try {
 				System.out.println("Please choose a user mode to proceed");
 				System.out.println("(1. Client, 2. Admin, 3. Exit)");
-				mode = sc.next().charAt(0);
+				mode = sc.nextLine();
 				sc.nextLine();
-				if (mode != '1' && mode != '2' && mode  != '3') {
+				if (!mode.contentEquals("1") && !mode.contentEquals("2") && !mode.contentEquals("3")) {
 					throw new Exception("Invalid input!");
 				}
 			}
@@ -574,14 +751,19 @@ public class MySQLConnect {
 			}
 		} while (!valid);
 		
-		if (mode == '1') {
-			client(sc, conn);
-		}
-		else if (mode == '2') {
-			checkAdmin(sc, conn);
-		}
-		else {
-			exitTicketer();
+		switch (mode) {
+			case "1":
+				client(sc, conn);
+				break;
+			case "2":
+				checkAdmin(sc, conn);
+				break;
+			case "3": 
+				exitTicketer();
+				break;
+			default:
+				System.out.println("Invalid input! Please try again");
+				break;
 		}
 		
 	}
