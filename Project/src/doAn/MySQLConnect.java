@@ -6,19 +6,169 @@ import java.util.*;
 
 public class MySQLConnect {
 	
-	static void ticketOrder (Scanner sc, Connection conn) {
+	static void getFilmInfo (Scanner sc, Connection conn) {
+		CallableStatement cStmt = null;
+		ResultSetMetaData rsmd = null;
+		int month, age;
+		String genre, temp;
 		String feat = "0";
-		boolean valid = false;
-		System.out.println("Here is the list of Films with available tickets:");
-		System.out.println("...");
+		boolean valid = false;		
+		//ask if user wanna get day or month revenue
+		do {
+			valid = true;
+			try {
+				System.out.println("In which category would you like to search by?");
+				System.out.println("1. By genre");
+				System.out.println("2. By release month");
+				System.out.println("3. By age restriction");
+				System.out.println("4. Exit");
+				feat = sc.nextLine();
+				if (!feat.contentEquals("1") && !feat.contentEquals("2") && 
+						!feat.contentEquals("3") && !feat.contentEquals("4")) {
+					throw new Exception("Invalid input!");
+				}
+			}
+			catch (Exception e) {
+				valid = false;
+				System.out.println("Invalid input! Please try again");
+			}
+		} while (!valid);
+				
+		if (feat.contentEquals("1")) { //show film's info by genre
+			try {
+				//get input
+				System.out.println("Enter the film genre you would like to see: ");
+				genre = sc.nextLine();
+				temp = genre.substring(0, 1).toUpperCase() + genre.substring(1);
+				//call procedure and set parameters
+				cStmt = conn.prepareCall("{call genre(?)}");
+				cStmt.setString(1, "%" + temp + "%");
+				//execute and notify the success of the procedure
+				ResultSet rs = cStmt.executeQuery();
+				if(rs != null) {
+					rsmd = rs.getMetaData();
+					int colNum = rsmd.getColumnCount();
+					while (rs.next()) {			
+						for (int i = 1; i <= colNum; i++) {
+							if (i > i)
+								System.out.println(", ");
+							String colValue = rs.getString(i);
+							System.out.println(rsmd.getColumnName(i) + ": " + colValue);
+						}
+						System.out.println("");
+					}
+				}		
+				else {
+					System.out.println("No data available! Please try again.");
+				}
+			} catch (SQLException e1) {
+				System.out.println("SQL Exception: " + e1.getMessage());
+			} finally {
+				if (cStmt != null) {
+					try {
+						cStmt.close();
+					} catch (SQLException e1) {
+						System.out.println("SQL Exception: " + e1.getMessage());
+					}
+					cStmt = null;
+				}
+			}
+		}
+		else if (feat.contentEquals("2")) { //show film's info by release month
+			try {
+				//get input
+				System.out.println("Enter a month (in number): ");
+				month = sc.nextInt();
+				sc.nextLine();
+				//call procedure and set parameters
+				cStmt = conn.prepareCall("{call rmonth(?)}");
+				cStmt.setInt(1, month);
+				//execute and notify the success of the procedure
+				ResultSet rs = cStmt.executeQuery();
+				if(rs != null) {
+					rsmd = rs.getMetaData();
+					int colNum = rsmd.getColumnCount();
+					while (rs.next()) {			
+						for (int i = 1; i <= colNum; i++) {
+							if (i > i)
+								System.out.println(", ");
+							String colValue = rs.getString(i);
+							System.out.println(rsmd.getColumnName(i) + ": " + colValue);
+						}
+						System.out.println("");
+					}
+				}	
+				else {
+					System.out.println("No data available! Please try again.");
+				}
+			} catch (SQLException e1) {
+				System.out.println("SQL Exception: " + e1.getMessage());
+			} finally {
+				if (cStmt != null) {
+					try {
+						cStmt.close();
+					} catch (SQLException e1) {
+						System.out.println("SQL Exception: " + e1.getMessage());
+					}
+					
+					cStmt = null;
+				}
+			}
+		}
+		else if (feat.contentEquals("3")) { //show films info by age limit
+			try {
+				//get input
+				System.out.println("Enter the minimum age of your audience: ");
+				age = sc.nextInt();
+				sc.nextLine();
+				//call procedure and set parameters
+				cStmt = conn.prepareCall("{call agelim(?)}");
+				cStmt.setInt(1, age);
+				//execute and notify the success of the procedure
+				ResultSet rs = cStmt.executeQuery();
+				if(rs != null) {
+					rsmd = rs.getMetaData();
+					int colNum = rsmd.getColumnCount();
+					while (rs.next()) {			
+						for (int i = 1; i <= colNum; i++) {
+							if (i > i)
+								System.out.println(", ");
+							String colValue = rs.getString(i);
+							System.out.println(rsmd.getColumnName(i) + ": " + colValue);
+						}
+						System.out.println("");
+					}
+				}	
+				else {
+					System.out.println("No data available! Please try again.");
+				}
+			} catch (SQLException e1) {
+				System.out.println("SQL Exception: " + e1.getMessage());
+			} finally {
+				if (cStmt != null) {
+					try {
+						cStmt.close();
+					} catch (SQLException e1) {
+						System.out.println("SQL Exception: " + e1.getMessage());
+					}
+					
+					cStmt = null;
+				}
+			}
+		}
+		else if (feat.contentEquals("4")) {
+			exitTicketer();
+		}
+		//Ask user what do they want to do next
 		do {
 			valid = true;
 			try {
 				System.out.println("What do you want to do next?");
-				System.out.println("1. Continue using Ticketer");
-				System.out.println("2. Exit");
+				System.out.println("1. Continue as client");
+				System.out.println("2. Continue as admin");
+				System.out.println("3. Exit");
 				feat = sc.nextLine();
-				if (!feat.contentEquals("1") && !feat.contentEquals("2")) {
+				if (!feat.contentEquals("1") && !feat.contentEquals("2") && !feat.contentEquals("3")) {
 					throw new Exception("Invalid input!");
 				}
 			}
@@ -33,6 +183,9 @@ public class MySQLConnect {
 				client(sc, conn);
 				break;
 			case "2":
+				checkAdmin(sc, conn);
+				break;
+			case "3":
 				exitTicketer();
 				break;
 			default:
@@ -41,19 +194,60 @@ public class MySQLConnect {
 		}
 	}
 	
-	static void lookupSchedule (Scanner sc, Connection conn) {
+	static void getTicketInfo (Scanner sc, Connection conn) {
+		CallableStatement cStmt = null;
+		ResultSetMetaData rsmd = null;
+		String ticketID;
 		String feat = "0";
-		boolean valid = false;
-		System.out.println("Here is the schedule of upcoming Films:");
-		System.out.println("...");
+		boolean valid = false;		
+		//ask if user wanna get day or month revenue
+		try {
+			//get input
+			System.out.println("Please enter the ID of the ticket you wish to look up: ");
+			ticketID = sc.nextLine();;
+			//call procedure and set parameters
+			cStmt = conn.prepareCall("{call tk_info(?)}");
+			cStmt.setString(1, ticketID);
+			//execute and notify the success of the procedure
+			ResultSet rs = cStmt.executeQuery();
+			if(rs != null) {
+				rsmd = rs.getMetaData();
+				int colNum = rsmd.getColumnCount();
+				while (rs.next()) {			
+					for (int i = 1; i <= colNum; i++) {
+						if (i > i)
+							System.out.println(", ");
+						String colValue = rs.getString(i);
+						System.out.println(rsmd.getColumnName(i) + ": " + colValue);
+					}
+					System.out.println("");
+				}
+			}		
+			else {
+				System.out.println("No data available! Please try again.");
+			}
+		} catch (SQLException e1) {
+			System.out.println("SQL Exception: " + e1.getMessage());
+		} finally {
+			if (cStmt != null) {
+				try {
+					cStmt.close();
+				} catch (SQLException e1) {
+					System.out.println("SQL Exception: " + e1.getMessage());
+				}
+				cStmt = null;
+			}
+		}
+		//Ask user what do they want to do next
 		do {
 			valid = true;
 			try {
 				System.out.println("What do you want to do next?");
-				System.out.println("1. Continue using Ticketer");
-				System.out.println("2. Exit");
+				System.out.println("1. Continue as client");
+				System.out.println("2. Continue as admin");
+				System.out.println("3. Exit");
 				feat = sc.nextLine();
-				if (!feat.contentEquals("1") && !feat.contentEquals("2")) {
+				if (!feat.contentEquals("1") && !feat.contentEquals("2") && !feat.contentEquals("3")) {
 					throw new Exception("Invalid input!");
 				}
 			}
@@ -68,6 +262,124 @@ public class MySQLConnect {
 				client(sc, conn);
 				break;
 			case "2":
+				checkAdmin(sc, conn);
+				break;
+			case "3":
+				exitTicketer();
+				break;
+			default:
+				System.out.println("Invalid input! Please try again");
+				break;
+		}
+	}
+	
+	static void getShowTime (Scanner sc, Connection conn) {
+		CallableStatement cStmt = null;
+		ResultSetMetaData rsmd = null;
+		String theaterID, cityName;
+		String feat = "0";
+		boolean valid = false;		
+		try {
+			//get input
+			System.out.println("Please enter the name of your city/province: ");
+			cityName = sc.nextLine();
+			//call procedure and set parameters
+			cStmt = conn.prepareCall("{call city(?)}");
+			cStmt.setString(1, cityName);
+			//execute and notify the success of the procedure
+			ResultSet rs = cStmt.executeQuery();
+			if(rs != null) {
+				rsmd = rs.getMetaData();
+				int colNum = rsmd.getColumnCount();
+				while (rs.next()) {			
+					for (int i = 1; i <= colNum; i++) {
+						if (i > i)
+							System.out.println(", ");
+						String colValue = rs.getString(i);
+						System.out.println(rsmd.getColumnName(i) + ": " + colValue);
+					}
+					System.out.println("");
+				}
+			}	
+			else {
+				System.out.println("No data available! Please try again.");
+			}
+		} catch (SQLException e1) {
+			System.out.println("SQL Exception: " + e1.getMessage());
+		} finally {
+			if (cStmt != null) {
+				try {
+					cStmt.close();
+				} catch (SQLException e1) {
+					System.out.println("SQL Exception: " + e1.getMessage());
+				}
+				cStmt = null;
+			}
+		}
+		try {
+			//get input
+			System.out.println("Please enter the ID of the theater whose schedule you wish to look up: ");
+			theaterID = sc.nextLine();
+			//call procedure and set parameters
+			cStmt = conn.prepareCall("{call showtime_info(?)}");
+			cStmt.setString(1, theaterID);
+			//execute and notify the success of the procedure
+			ResultSet rs = cStmt.executeQuery();
+			if(rs != null) {
+				rsmd = rs.getMetaData();
+				int colNum = rsmd.getColumnCount();
+				while (rs.next()) {			
+					for (int i = 1; i <= colNum; i++) {
+						if (i > i)
+							System.out.println(", ");
+						String colValue = rs.getString(i);
+						System.out.println(rsmd.getColumnName(i) + ": " + colValue);
+					}
+					System.out.println("");
+				}
+			}	
+			else {
+				System.out.println("No data available! Please try again.");
+			}
+		} catch (SQLException e1) {
+			System.out.println("SQL Exception: " + e1.getMessage());
+		} finally {
+			if (cStmt != null) {
+				try {
+					cStmt.close();
+				} catch (SQLException e1) {
+					System.out.println("SQL Exception: " + e1.getMessage());
+				}
+				cStmt = null;
+			}
+		}
+		//Ask user what do they want to do next
+		do {
+			valid = true;
+			try {
+				System.out.println("What do you want to do next?");
+				System.out.println("1. Continue as client");
+				System.out.println("2. Continue as admin");
+				System.out.println("3. Exit");
+				feat = sc.nextLine();
+				if (!feat.contentEquals("1") && !feat.contentEquals("2") && !feat.contentEquals("3")) {
+					throw new Exception("Invalid input!");
+				}
+			}
+			catch (Exception e) {
+				valid = false;
+				System.out.println("Invalid input! Please try again");
+			}
+		} while (!valid);
+		
+		switch (feat) {
+			case "1":
+				client(sc, conn);
+				break;
+			case "2":
+				checkAdmin(sc, conn);
+				break;
+			case "3":
 				exitTicketer();
 				break;
 			default:
@@ -84,11 +396,14 @@ public class MySQLConnect {
 			valid = true;
 			try {
 				System.out.println("Please choose a feature you wish to use: ");
-				System.out.println("1. Order a ticket");
-				System.out.println("2. Look up Film schedule");
-				System.out.println("3. Exit");
+				System.out.println("1. Look up ticket info");
+				System.out.println("2. Look up theater's show time");
+				System.out.println("3. Look up films' info");
+				System.out.println("4. Exit");
 				feat = sc.nextLine();
-				if (!feat.contentEquals("1") && !feat.contentEquals("2") && !feat.contentEquals("3")) {
+				if (!feat.contentEquals("1") && !feat.contentEquals("2") && 
+						!feat.contentEquals("3")) 
+				{
 					throw new Exception("Invalid input!");
 				}
 			}
@@ -101,12 +416,15 @@ public class MySQLConnect {
 		
 		switch (feat) {
 			case "1":
-				ticketOrder(sc, conn);
+				getTicketInfo(sc, conn);
 				break;
 			case "2":
-				lookupSchedule(sc, conn);
+				getShowTime(sc, conn);
 				break;
 			case "3":
+				getFilmInfo(sc, conn);
+				break;
+			case "4":
 				exitTicketer();
 				break;
 			default:
@@ -154,11 +472,18 @@ public class MySQLConnect {
 				System.out.println("2. Add new theater info");
 				System.out.println("3. Add new scheduling info");
 				System.out.println("4. Add new customer info");
-				System.out.println("5. Calculate revenue");
-				System.out.println("6. Exit");
+				System.out.println("5. Get revenue");
+				System.out.println("6. Look up show time");
+				System.out.println("7. Look up ticket info");
+				System.out.println("8. Look up films info");
+				System.out.println("9. Exit");
 				feat = sc.nextLine();
 				sc.nextLine();
-				if (!feat.contentEquals("1") && !feat.contentEquals("2") && !feat.contentEquals("3") && !feat.contentEquals("4") && !feat.contentEquals("5") && !feat.contentEquals("6")) {
+				if (!feat.contentEquals("1") && !feat.contentEquals("2") && 
+						!feat.contentEquals("3") && !feat.contentEquals("4") && 
+						!feat.contentEquals("5") && !feat.contentEquals("6") && 
+						!feat.contentEquals("7")) 
+				{
 					throw new Exception("Invalid input!");
 				}
 			}
@@ -185,6 +510,15 @@ public class MySQLConnect {
 				getRevenue(sc, conn);
 				break;
 			case "6":
+				getShowTime(sc, conn);
+				break;
+			case "7":
+				getTicketInfo(sc, conn);
+				break;
+			case "8":
+				getFilmInfo(sc, conn);
+				break;	
+			case "9":
 				exitTicketer();
 				break;
 			default:
@@ -609,9 +943,21 @@ public class MySQLConnect {
 				//execute and notify the success of the procedure
 				ResultSet rs = cStmt.executeQuery();
 				if(rs != null) {
-					revenue = rs.getString(0);
-					System.out.println(date + " revenue: " + revenue);
-				}	
+					rsmd = rs.getMetaData();
+					int colNum = rsmd.getColumnCount();
+					while (rs.next()) {			
+						for (int i = 1; i <= colNum; i++) {
+							if (i > i)
+								System.out.println(", ");
+							String colValue = rs.getString(i);
+							System.out.println(date + " revenue: " + colValue + " VND");
+						}
+						System.out.println("");
+					}
+				}		
+				else {
+					System.out.println("No data available! Please try again.");
+				}
 			} catch (SQLException e1) {
 				System.out.println("SQL Exception: " + e1.getMessage());
 			} finally {
@@ -621,7 +967,6 @@ public class MySQLConnect {
 					} catch (SQLException e1) {
 						System.out.println("SQL Exception: " + e1.getMessage());
 					}
-					
 					cStmt = null;
 				}
 			}
@@ -655,6 +1000,9 @@ public class MySQLConnect {
 					}
 
 				}	
+				else {
+					System.out.println("No data available! Please try again.");
+				}
 			} catch (SQLException e1) {
 				System.out.println("SQL Exception: " + e1.getMessage());
 			} finally {
@@ -740,7 +1088,6 @@ public class MySQLConnect {
 				System.out.println("Please choose a user mode to proceed");
 				System.out.println("(1. Client, 2. Admin, 3. Exit)");
 				mode = sc.nextLine();
-				sc.nextLine();
 				if (!mode.contentEquals("1") && !mode.contentEquals("2") && !mode.contentEquals("3")) {
 					throw new Exception("Invalid input!");
 				}
