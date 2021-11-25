@@ -472,17 +472,19 @@ public class MySQLConnect {
 				System.out.println("2. Add new theater info");
 				System.out.println("3. Add new scheduling info");
 				System.out.println("4. Add new customer info");
-				System.out.println("5. Get revenue");
-				System.out.println("6. Look up show time");
-				System.out.println("7. Look up ticket info");
-				System.out.println("8. Look up films info");
-				System.out.println("9. Exit");
+				System.out.println("5. Add new ticket info");
+				System.out.println("6. Get revenue");
+				System.out.println("7. Look up show time");
+				System.out.println("8. Look up ticket info");
+				System.out.println("9. Look up films info");
+				System.out.println("10. Exit");
 				feat = sc.nextLine();
 				sc.nextLine();
 				if (!feat.contentEquals("1") && !feat.contentEquals("2") && 
 						!feat.contentEquals("3") && !feat.contentEquals("4") && 
 						!feat.contentEquals("5") && !feat.contentEquals("6") && 
-						!feat.contentEquals("7")) 
+						!feat.contentEquals("7") && !feat.contentEquals("8") &&
+						!feat.contentEquals("9") && !feat.contentEquals("10")) 
 				{
 					throw new Exception("Invalid input!");
 				}
@@ -507,18 +509,21 @@ public class MySQLConnect {
 				addCustomer(sc, conn);
 				break;
 			case "5":
-				getRevenue(sc, conn);
+				addTicket(sc, conn);
 				break;
 			case "6":
-				getShowTime(sc, conn);
+				getRevenue(sc, conn);
 				break;
 			case "7":
-				getTicketInfo(sc, conn);
+				getShowTime(sc, conn);
 				break;
 			case "8":
+				getTicketInfo(sc, conn);
+				break;
+			case "9":
 				getFilmInfo(sc, conn);
 				break;	
-			case "9":
+			case "10":
 				exitTicketer();
 				break;
 			default:
@@ -534,24 +539,24 @@ public class MySQLConnect {
 		String feat = "0";
 		boolean valid = false;		
 		//Get input
-		System.out.println("Please insert new film infomation:");
-		System.out.println("Film's ID: ");
+		System.out.println("Please insert new film infomation");
+		System.out.println("Enter film's ID: ");
 		id = sc.nextLine();
-		System.out.println("Film's name: ");
+		System.out.println("Enter film's name: ");
 		name = sc.nextLine();
-		System.out.println("Film's genre: ");
+		System.out.println("Enter film's genre: ");
 		genre = sc.nextLine();
-		System.out.println("Film's duration (minutes): ");
+		System.out.println("Enter film's duration (minutes): ");
 		duration = sc.nextInt();
 		sc.nextLine();
-		System.out.println("Film's release date (YYYY-MM-DD): ");
+		System.out.println("Enter film's release date (YYYY-MM-DD): ");
 		sReleaseDate = sc.nextLine();
 		releaseDate = Date.valueOf(sReleaseDate);
-		System.out.println("Film's origin (country): ");
+		System.out.println("Enter film's origin (country): ");
 		origin = sc.nextLine();
-		System.out.println("Film's language: ");
+		System.out.println("Enter film's language: ");
 		lang = sc.nextLine();
-		System.out.println("Film's age limit: ");
+		System.out.println("Enter film's age limit: ");
 		limit = sc.nextLine();
 		
 		try {
@@ -567,7 +572,7 @@ public class MySQLConnect {
 			cStmt.setString(8, limit);
 			//execute and notify the success of the procedure
 			if(cStmt.executeQuery() != null) {
-				System.out.println("New film added successfully");
+				System.out.println("New film added successfully!");
 			}	
 		} catch (SQLException e1) {
 			System.out.println("SQL Exception: " + e1.getMessage());
@@ -620,17 +625,17 @@ public class MySQLConnect {
 		String feat = "0";
 		boolean valid = false;		
 		//Get input
-		System.out.println("Please insert new theater infomation:");
-		System.out.println("Theater's ID: ");
+		System.out.println("Please insert new theater infomation");
+		System.out.println("Enter theater's ID: ");
 		id = sc.nextLine();
-		System.out.println("Theater's name: ");
+		System.out.println("Enter theater's name: ");
 		name = sc.nextLine();
-		System.out.println("Theater's location: ");
+		System.out.println("Enter theater's location: ");
 		location = sc.nextLine();
-		System.out.println("Theater's hotline: ");
+		System.out.println("Enter theater's hotline: ");
 		hotline = sc.nextInt();
 		sc.nextLine();
-		System.out.println("Theater's opening time (opening hour-closing hour, using 24 hours time): ");
+		System.out.println("Enter theater's opening time (opening hour-closing hour, using 24 hours time): ");
 		opening = sc.nextLine();
 		
 		try {
@@ -643,7 +648,7 @@ public class MySQLConnect {
 			cStmt.setString(5, opening);
 			//execute and notify the success of the procedure
 			if(cStmt.executeQuery() != null) {
-				System.out.println("New theater added successfully");
+				System.out.println("New theater added successfully!");
 			}	
 		} catch (SQLException e1) {
 			System.out.println("SQL Exception: " + e1.getMessage());
@@ -735,22 +740,22 @@ public class MySQLConnect {
 		}
 		//Get input
 		System.out.println("Please insert new schedule infomation:");
-		System.out.println("Schedule's ID: ");
+		System.out.println("Enter schedule's ID: ");
 		sid = sc.nextLine();
-		System.out.println("Total slot: ");
+		System.out.println("Enter total slot: ");
 		totalSlot = sc.nextInt();
 		sc.nextLine();
-		System.out.println("Available slot: ");
+		System.out.println("Enter available slot: ");
 		availableSlot = sc.nextInt();
 		sc.nextLine();
-		System.out.println("Screen number: ");
+		System.out.println("Enter screen number: ");
 		screen = sc.nextInt();
 		sc.nextLine();
-		System.out.println("Start time: ");
+		System.out.println("Enter start time: ");
 		startTime = sc.nextLine();
-		System.out.println("Film's ID: ");
+		System.out.println("Enter film's ID: ");
 		fid = sc.nextLine();
-		System.out.println("Theater's ID: ");
+		System.out.println("Enter theater's ID: ");
 		tid = sc.nextLine();
 		
 		try {
@@ -837,15 +842,15 @@ public class MySQLConnect {
 		boolean valid = false;
 
 		//Get input
-		System.out.println("Please insert new customer infomation:");
-		System.out.println("Customer's phone number: ");
+		System.out.println("Please insert new customer infomation");
+		System.out.println("Enter customer's phone number: ");
 		phone = sc.nextLine();
-		System.out.println("Customer's name: ");
+		System.out.println("Enter customer's name: ");
 		name = sc.nextLine();
-		System.out.println("Customer's age: ");
+		System.out.println("Enter customer's age: ");
 		age = sc.nextInt();
 		sc.nextLine();
-		System.out.println("Customer's membership type: ");
+		System.out.println("Enter customer's membership type: ");
 		membership = sc.nextLine();
 		
 		try {
@@ -857,7 +862,95 @@ public class MySQLConnect {
 			cStmt.setString(4, membership);
 			//execute and notify the success of the procedure
 			if(cStmt.executeQuery() != null) {
-				System.out.println("new customer added successfully");
+				System.out.println("New customer added successfully!");
+			}	
+		} catch (SQLException e1) {
+			System.out.println("SQL Exception: " + e1.getMessage());
+		} finally {
+			if (cStmt != null) {
+				try {
+					cStmt.close();
+				} catch (SQLException e1) {
+					System.out.println("SQL Exception: " + e1.getMessage());
+				}
+				
+				cStmt = null;
+			}
+		}
+		//Ask user what do they want to do next
+		do {
+			valid = true;
+			try {
+				System.out.println("What do you want to do next?");
+				System.out.println("1. Continue");
+				System.out.println("2. Exit");
+				feat = sc.nextLine();
+				if (!feat.contentEquals("1") && !feat.contentEquals("2")) {
+					throw new Exception("Invalid input!");
+				}
+			}
+			catch (Exception e) {
+				valid = false;
+				System.out.println("Invalid input! Please try again");
+			}
+		} while (!valid);
+		
+		switch (feat) {
+			case "1":
+				admin(sc, conn);
+				break;
+			case "2":
+				exitTicketer();
+				break;
+			default:
+				System.out.println("Invalid input! Please try again");
+				break;
+		}
+	}
+	
+	static void addTicket(Scanner sc, Connection conn) {
+		CallableStatement cStmt = null;
+		Date tkDate = null;
+		String tkid, stkDate, fid, tid, sid, seatCat;
+		int seat, price;
+		String feat = "0";
+		boolean valid = false;
+
+		//Get input
+		System.out.println("Please insert new ticket infomation:");
+		System.out.println("Enter ticket id:");
+		tkid = sc.nextLine();
+		System.out.println("Enter ticket day of purchase (YYYY-MM-DD): ");
+		stkDate = sc.nextLine();
+		tkDate = Date.valueOf(stkDate);
+		System.out.println("Enter film id: ");
+		fid = sc.nextLine();
+		System.out.println("Enter theater id: ");
+		tid = sc.nextLine();
+		System.out.println("Enter show time id: ");
+		sid = sc.nextLine();
+		System.out.println("Enter seat number: ");
+		seat = sc.nextInt();
+		sc.nextLine();
+		System.out.println("Enter seat category id: ");
+		seatCat = sc.nextLine();
+		System.out.println("Enter price (VND): ");
+		price = sc.nextInt();
+		sc.nextLine();
+		try {
+			//call procedure and set parameters
+			cStmt = conn.prepareCall("{call add_tktr(?, ?, ?, ?, ?, ?, ?, ?)}");
+			cStmt.setString(1, tkid);
+			cStmt.setDate(2, tkDate);
+			cStmt.setString(3, fid);
+			cStmt.setString(4, tid);
+			cStmt.setString(5, sid);
+			cStmt.setInt(6, seat);
+			cStmt.setString(7, seatCat);
+			cStmt.setInt(8, price);
+			//execute and notify the success of the procedure
+			if(cStmt.executeQuery() != null) {
+				System.out.println("New customer added successfully!");
 			}	
 		} catch (SQLException e1) {
 			System.out.println("SQL Exception: " + e1.getMessage());
