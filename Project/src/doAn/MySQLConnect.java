@@ -1,3 +1,6 @@
+//Creators: 
+//VO PHAN MINH HIEN(B1910641) AND NGUYEN NGOC TUONG MINH(B1910666)
+//This is Ticketer, a simple cinema management application
 package doAn;
 
 import java.sql.*;
@@ -211,7 +214,7 @@ public class MySQLConnect {
 			//execute and notify the success of the procedure
 			ResultSet rs = cStmt.executeQuery();
 			if(rs != null) {
-				rsmd = rs.getMetaData();
+		 		rsmd = rs.getMetaData();
 				int colNum = rsmd.getColumnCount();
 				while (rs.next()) {			
 					for (int i = 1; i <= colNum; i++) {
@@ -479,7 +482,6 @@ public class MySQLConnect {
 				System.out.println("9. Look up films info");
 				System.out.println("10. Exit");
 				feat = sc.nextLine();
-				sc.nextLine();
 				if (!feat.contentEquals("1") && !feat.contentEquals("2") && 
 						!feat.contentEquals("3") && !feat.contentEquals("4") && 
 						!feat.contentEquals("5") && !feat.contentEquals("6") && 
@@ -911,7 +913,7 @@ public class MySQLConnect {
 	static void addTicket(Scanner sc, Connection conn) {
 		CallableStatement cStmt = null;
 		Date tkDate = null;
-		String tkid, stkDate, fid, tid, sid, seatCat;
+		String tkid, stkDate, fid, cphone, seatCat;
 		int seat, price;
 		String feat = "0";
 		boolean valid = false;
@@ -923,12 +925,10 @@ public class MySQLConnect {
 		System.out.println("Enter ticket day of purchase (YYYY-MM-DD): ");
 		stkDate = sc.nextLine();
 		tkDate = Date.valueOf(stkDate);
-		System.out.println("Enter film id: ");
+		System.out.println("Enter schedule id: ");
 		fid = sc.nextLine();
-		System.out.println("Enter theater id: ");
-		tid = sc.nextLine();
-		System.out.println("Enter show time id: ");
-		sid = sc.nextLine();
+		System.out.println("Enter customer's phone number: ");
+		cphone = sc.nextLine();
 		System.out.println("Enter seat number: ");
 		seat = sc.nextInt();
 		sc.nextLine();
@@ -939,15 +939,14 @@ public class MySQLConnect {
 		sc.nextLine();
 		try {
 			//call procedure and set parameters
-			cStmt = conn.prepareCall("{call add_tktr(?, ?, ?, ?, ?, ?, ?, ?)}");
+			cStmt = conn.prepareCall("{call add_tkt(?, ?, ?, ?, ?, ?, ?)}");
 			cStmt.setString(1, tkid);
 			cStmt.setDate(2, tkDate);
 			cStmt.setString(3, fid);
-			cStmt.setString(4, tid);
-			cStmt.setString(5, sid);
-			cStmt.setInt(6, seat);
-			cStmt.setString(7, seatCat);
-			cStmt.setInt(8, price);
+			cStmt.setString(4, cphone);
+			cStmt.setInt(5, seat);
+			cStmt.setString(6, seatCat);
+			cStmt.setInt(7, price);
 			//execute and notify the success of the procedure
 			if(cStmt.executeQuery() != null) {
 				System.out.println("New customer added successfully!");
