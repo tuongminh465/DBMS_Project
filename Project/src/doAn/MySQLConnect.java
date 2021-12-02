@@ -405,7 +405,7 @@ public class MySQLConnect {
 				System.out.println("4. Exit");
 				feat = sc.nextLine();
 				if (!feat.contentEquals("1") && !feat.contentEquals("2") && 
-						!feat.contentEquals("3")) 
+						!feat.contentEquals("3") && !feat.contentEquals("4")) 
 				{
 					throw new Exception("Invalid input!");
 				}
@@ -949,7 +949,7 @@ public class MySQLConnect {
 			cStmt.setInt(7, price);
 			//execute and notify the success of the procedure
 			if(cStmt.executeQuery() != null) {
-				System.out.println("New customer added successfully!");
+				System.out.println("New ticket added successfully!");
 			}	
 		} catch (SQLException e1) {
 			System.out.println("SQL Exception: " + e1.getMessage());
